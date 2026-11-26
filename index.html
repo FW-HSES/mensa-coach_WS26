@@ -2,37 +2,39 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2f7d4f">
 <title>Mensa-Coach</title>
 <style>
-:root{--ak:#2f7d4f;--akhell:#e6f2ea;--bg:#f4f6f5;--karte:#fff;--text:#1d2b24;--grau:#6b7a72;--rand:#e1e7e3;--gruen:#2f9e5b;--gelb:#e8a317;--rot:#d64545}
+:root{--ak:#2f7d4f;--akhell:#e6f2ea;--bg:#f4f6f5;--karte:#fff;--text:#1d2b24;--grau:#6b7a72;--rand:#e1e7e3;--gruen:#2f9e5b;--gelb:#e8a317;--rot:#d64545;--pad:clamp(14px,4vw,32px);--li:max(var(--pad),env(safe-area-inset-left));--re:max(var(--pad),env(safe-area-inset-right))}
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text)}
-button{font:inherit;cursor:pointer}
-header{display:flex;justify-content:space-between;align-items:center;padding:16px 32px;background:var(--karte);border-bottom:1px solid var(--rand)}
-.titel{font-size:22px;font-weight:700;color:var(--ak)}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);overflow-wrap:anywhere}
+button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:14px var(--re) 14px var(--li);padding-top:max(14px,env(safe-area-inset-top));background:var(--karte);border-bottom:1px solid var(--rand)}
+.titel{font-size:clamp(19px,5vw,22px);font-weight:700;color:var(--ak)}
 .umschalter{display:flex;gap:4px;padding:4px;background:var(--bg);border-radius:12px}
-.umschalter button{border:0;background:none;padding:8px 16px;border-radius:9px;color:var(--grau)}
+.umschalter button{border:0;background:none;padding:8px 16px;min-height:40px;border-radius:9px;color:var(--grau)}
 .umschalter button.aktiv{background:var(--ak);color:#fff}
-#tabs,main{max-width:1200px;margin:0 auto;padding-left:32px;padding-right:32px}
-#tabs{display:flex;gap:8px;padding-top:20px}
-.tab{border:1px solid var(--rand);background:var(--karte);padding:10px 18px;border-radius:12px;color:var(--text)}
-.tab small{color:var(--grau);margin-left:4px}
+#tabs,main{max-width:1200px;margin:0 auto;padding-left:var(--li);padding-right:var(--re)}
+#tabs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:clamp(4px,1.5vw,8px);padding-top:16px}
+.tab{border:1px solid var(--rand);background:var(--karte);padding:8px 4px;min-height:44px;border-radius:12px;color:var(--text);text-align:center;line-height:1.25}
+.tab small{display:block;color:var(--grau);font-size:12px;margin-top:2px}
 .tab.aktiv{background:var(--ak);border-color:var(--ak);color:#fff}
 .tab.aktiv small{color:#d5ecdc}
-main{display:grid;grid-template-columns:1fr 320px;gap:24px;padding-top:16px;padding-bottom:40px;align-items:start}
-#rechts{position:sticky;top:16px}
+main{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;padding-top:16px;padding-bottom:max(40px,env(safe-area-inset-bottom));align-items:start}
+#rechts{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto}
 h2{font-size:17px;margin:20px 0 10px}
 h3{font-size:14px;color:var(--grau);font-weight:600;margin:18px 0 8px}
 .karte{background:var(--karte);border:1px solid var(--rand);border-radius:18px;padding:18px 20px;margin-bottom:12px}
-.karte h2:first-child{margin-top:0}
 .gross{background:var(--akhell);border-color:#c5e0cf;padding:24px}
 .label{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ak)}
-.gross .name{font-size:26px;font-weight:700;margin:6px 0 12px}
+.gross .name{font-size:clamp(20px,5.5vw,26px);font-weight:700;margin:6px 0 12px}
 .zeile{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.zeile>div:first-child{min-width:0}
 .name{font-weight:600}
-.preis{font-weight:700;white-space:nowrap}
-.gross .preis{font-size:22px;color:var(--ak)}
+.preis{font-weight:700;white-space:nowrap;flex-shrink:0}
+.gross .preis{font-size:clamp(18px,5vw,22px);color:var(--ak)}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;align-items:center}
 .chip{font-size:13px;padding:4px 10px;border-radius:20px;background:var(--bg);color:var(--text)}
 .chip.gruen{background:var(--ak);color:#fff}
@@ -45,18 +47,43 @@ h3{font-size:14px;color:var(--grau);font-weight:600;margin:18px 0 8px}
 .balken{height:6px;background:var(--rand);border-radius:6px;overflow:hidden;margin-top:10px}
 .balken div{height:100%;background:var(--ak)}
 .passung{font-size:12px;color:var(--grau);margin-top:4px}
-.mail{margin-top:16px;border:0;background:var(--ak);color:#fff;padding:10px 18px;border-radius:12px;font-weight:600}
+.mail{margin-top:16px;border:0;background:var(--ak);color:#fff;padding:10px 18px;min-height:44px;border-radius:12px;font-weight:600}
 .mail:hover{background:#266641}
 .stand{font-size:13px;color:var(--grau);margin-bottom:10px}
 .leer,.fehler{text-align:center;color:var(--grau);padding:36px}
 .fehler{color:var(--rot)}
-.check{display:flex;gap:10px;align-items:center;padding:6px 0}
+#prio summary{display:flex;justify-content:space-between;align-items:center;min-height:28px;font-size:17px;font-weight:700;cursor:pointer;list-style:none}
+#prio summary::-webkit-details-marker{display:none}
+#prio summary::after{content:"▾";color:var(--ak);transition:transform .2s}
+#prio[open] summary::after{transform:rotate(180deg)}
+.check{display:flex;gap:10px;align-items:center;padding:6px 0;min-height:36px}
 .regler{margin:12px 0}
-.regler div{display:flex;justify-content:space-between;font-size:14px}
+.regler div{display:flex;justify-content:space-between;gap:12px;font-size:14px}
 .regler b{color:var(--ak)}
-input[type=range]{width:100%;accent-color:var(--ak)}
-input[type=checkbox]{width:18px;height:18px;accent-color:var(--ak)}
+input[type=range]{width:100%;height:28px;accent-color:var(--ak)}
+input[type=checkbox]{width:20px;height:20px;flex-shrink:0;accent-color:var(--ak)}
 .hinweis{font-size:12px;color:var(--grau);margin:16px 0 0}
+
+@media (min-width:901px){
+  #prio summary{pointer-events:none}
+  #prio summary::after{display:none}
+}
+@media (max-width:900px){
+  main{grid-template-columns:minmax(0,1fr);gap:0}
+  #rechts{order:-1;position:static;max-height:none;overflow:visible}
+}
+@media (max-width:600px){
+  header{flex-direction:column;align-items:stretch}
+  .umschalter button{flex:1}
+  .karte{padding:16px;border-radius:16px}
+  .gross{padding:18px}
+  .check{min-height:44px}
+  input[type=checkbox]{width:24px;height:24px}
+  input[type=range]{height:36px}
+  #prio summary{min-height:36px}
+  .mail{width:100%}
+  .zeile{gap:8px}
+}
 </style>
 </head>
 <body>
@@ -76,6 +103,7 @@ const GEWICHTE = [["gesundheit", "Gesundheit"], ["kalorien", "Kalorien (weniger 
 const STANDARD = { mensa: "flandernstrasse", vegan: false, vegetarisch: false, gesundheit: 2, kalorien: 1, preis: 2, eiweiss: 1 };
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const breit = matchMedia("(min-width: 901px)");
 
 let prio = ladePrio();
 let daten = null, tagWahl = null, tagIndex = 0, empfehlung = null;
@@ -227,14 +255,17 @@ function zeichneMensen() {
 }
 
 function zeichneSeitenleiste() {
-  $("#rechts").innerHTML = `<div class="karte"><h2>Meine Prioritäten</h2>
+  $("#rechts").innerHTML = `<details class="karte" id="prio" open><summary>Meine Prioritäten</summary>
     <h3>Filter</h3>
     <label class="check"><input type="checkbox" id="f-vegan" ${prio.vegan ? "checked" : ""}> Nur vegan</label>
     <label class="check"><input type="checkbox" id="f-vegetarisch" ${prio.vegetarisch ? "checked" : ""}> Nur vegetarisch</label>
     <h3>Gewichtung (0 = egal, 3 = sehr wichtig)</h3>
     ${GEWICHTE.map(([k, n]) => `<div class="regler"><div><span>${n}</span><b id="w-${k}">${prio[k]}</b></div>
       <input type="range" min="0" max="3" step="1" value="${prio[k]}" data-k="${k}"></div>`).join("")}
-    <p class="hinweis">Gesundheit und Kalorien pro Portion sind KI-Schätzungen <i>(geschätzt)</i>. Deine Einstellungen werden in diesem Browser gemerkt.</p></div>`;
+    <p class="hinweis">Gesundheit und Kalorien pro Portion sind KI-Schätzungen <i>(geschätzt)</i>. Deine Einstellungen werden in diesem Browser gemerkt.</p></details>`;
+  const d = $("#prio");
+  d.open = breit.matches;
+  d.addEventListener("toggle", () => { if (breit.matches && !d.open) d.open = true; });
   $("#f-vegan").onchange = e => { prio.vegan = e.target.checked; speichere(); zeichne(); };
   $("#f-vegetarisch").onchange = e => { prio.vegetarisch = e.target.checked; speichere(); zeichne(); };
   document.querySelectorAll("input[type=range]").forEach(el => {
@@ -246,6 +277,8 @@ function zeichneSeitenleiste() {
     };
   });
 }
+
+breit.addEventListener("change", () => { const d = $("#prio"); if (d) d.open = breit.matches; });
 
 $("#mensen").onclick = e => {
   const m = e.target.dataset.m;
