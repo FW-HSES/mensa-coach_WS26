@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mensa-Coach</title>
+<style>
+:root{--ak:#2f7d4f;--akhell:#e6f2ea;--bg:#f4f6f5;--karte:#fff;--text:#1d2b24;--grau:#6b7a72;--rand:#e1e7e3;--gruen:#2f9e5b;--gelb:#e8a317;--rot:#d64545}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text)}
+button{font:inherit;cursor:pointer}
+header{display:flex;justify-content:space-between;align-items:center;padding:16px 32px;background:var(--karte);border-bottom:1px solid var(--rand)}
+.titel{font-size:22px;font-weight:700;color:var(--ak)}
+.umschalter{display:flex;gap:4px;padding:4px;background:var(--bg);border-radius:12px}
+.umschalter button{border:0;background:none;padding:8px 16px;border-radius:9px;color:var(--grau)}
+.umschalter button.aktiv{background:var(--ak);color:#fff}
+#tabs,main{max-width:1200px;margin:0 auto;padding-left:32px;padding-right:32px}
+#tabs{display:flex;gap:8px;padding-top:20px}
+.tab{border:1px solid var(--rand);background:var(--karte);padding:10px 18px;border-radius:12px;color:var(--text)}
+.tab small{color:var(--grau);margin-left:4px}
+.tab.aktiv{background:var(--ak);border-color:var(--ak);color:#fff}
+.tab.aktiv small{color:#d5ecdc}
+main{display:grid;grid-template-columns:1fr 320px;gap:24px;padding-top:16px;padding-bottom:40px;align-items:start}
+#rechts{position:sticky;top:16px}
+h2{font-size:17px;margin:20px 0 10px}
+h3{font-size:14px;color:var(--grau);font-weight:600;margin:18px 0 8px}
+.karte{background:var(--karte);border:1px solid var(--rand);border-radius:18px;padding:18px 20px;margin-bottom:12px}
+.karte h2:first-child{margin-top:0}
+.gross{background:var(--akhell);border-color:#c5e0cf;padding:24px}
+.label{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ak)}
+.gross .name{font-size:26px;font-weight:700;margin:6px 0 12px}
+.zeile{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.name{font-weight:600}
+.preis{font-weight:700;white-space:nowrap}
+.gross .preis{font-size:22px;color:var(--ak)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;align-items:center}
+.chip{font-size:13px;padding:4px 10px;border-radius:20px;background:var(--bg);color:var(--text)}
+.chip.gruen{background:var(--ak);color:#fff}
+.gross .chip{background:#fff}
+.gross .chip.gruen{background:var(--ak)}
+.chip i,.hinweis i,.begr i{font-size:11px;color:var(--grau);margin-left:3px}
+.ampel{display:inline-block;width:14px;height:14px;border-radius:50%;background:#c4ccc7;vertical-align:-2px;margin-right:4px}
+.ampel.g{background:var(--gruen)}.ampel.y{background:var(--gelb)}.ampel.r{background:var(--rot)}
+.begr{color:var(--grau);font-size:14px;margin:6px 0}
+.balken{height:6px;background:var(--rand);border-radius:6px;overflow:hidden;margin-top:10px}
+.balken div{height:100%;background:var(--ak)}
+.passung{font-size:12px;color:var(--grau);margin-top:4px}
+.mail{margin-top:16px;border:0;background:var(--ak);color:#fff;padding:10px 18px;border-radius:12px;font-weight:600}
+.mail:hover{background:#266641}
+.stand{font-size:13px;color:var(--grau);margin-bottom:10px}
+.leer,.fehler{text-align:center;color:var(--grau);padding:36px}
+.fehler{color:var(--rot)}
+.check{display:flex;gap:10px;align-items:center;padding:6px 0}
+.regler{margin:12px 0}
+.regler div{display:flex;justify-content:space-between;font-size:14px}
+.regler b{color:var(--ak)}
+input[type=range]{width:100%;accent-color:var(--ak)}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--ak)}
+.hinweis{font-size:12px;color:var(--grau);margin:16px 0 0}
+</style>
+</head>
+<body>
+<header>
+  <div class="titel">🥗 Mensa-Coach</div>
+  <div class="umschalter" id="mensen"></div>
+</header>
+<nav id="tabs"></nav>
+<main>
+  <section id="links"></section>
+  <aside id="rechts"></aside>
+</main>
+
+<script>
+const MENSEN = { flandernstrasse: "Flandernstraße", stadtmitte: "Stadtmitte" };
+const GEWICHTE = [["gesundheit", "Gesundheit"], ["kalorien", "Kalorien (weniger ist besser)"], ["preis", "Preis (günstiger ist besser)"], ["eiweiss", "Eiweiß"]];
+const STANDARD = { mensa: "flandernstrasse", vegan: false, vegetarisch: false, gesundheit: 2, kalorien: 1, preis: 2, eiweiss: 1 };
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+let prio = ladePrio();
+let daten = null, tagWahl = null, tagIndex = 0, empfehlung = null;
+
+function ladePrio() {
+  try { return { ...STANDARD, ...JSON.parse(localStorage.getItem("mensaCoachPrio") || "{}") }; }
+  catch (e) { return { ...STANDARD }; }
+}
+function speichere() {
+  try { localStorage.setItem("mensaCoachPrio", JSON.stringify(prio)); } catch (e) {}
+}
+
+function quelle() {
+  if (!location.hostname.endsWith("github.io")) throw new Error("Bitte die App über ihre GitHub-Pages-Adresse öffnen.");
+  const besitzer = location.hostname.split(".")[0];
+  const repo = location.pathname.split("/")[1];
+  return `https://raw.githubusercontent.com/${besitzer}/${repo}/main/data/${prio.mensa}.json`;
+}
+
+async function ladeDaten() {
+  $("#links").innerHTML = '<div class="karte leer">Lade Speiseplan …</div>';
+  try {
+    const r = await fetch(quelle(), { cache: "no-store" });
+    if (!r.ok) throw new Error("Die Datei wurde nicht gefunden (HTTP " + r.status + "). Wurde der Workflow schon ausgeführt?");
+    daten = await r.json();
+  } catch (e) {
+    daten = null;
+    $("#tabs").innerHTML = "";
+    $("#links").innerHTML = '<div class="karte fehler">Speiseplan konnte nicht geladen werden.<br><small>' + esc(e.message) + "</small></div>";
+    return;
+  }
+  const heute = new Date().toLocaleDateString("sv-SE");
+  const i = daten.tage.findIndex(t => t.datum === (tagWahl || heute));
+  tagIndex = i >= 0 ? i : 0;
+  zeichne();
+}
+
+function bewerten(liste) {
+  const portion = liste.every(g => g.kcal_portion != null);
+  const wert = {
+    gesundheit: g => g.gesundheit,
+    kalorien: g => (portion ? g.kcal_portion : g.kcal_100g),
+    preis: g => g.preis_studierende,
+    eiweiss: g => g.eiweiss_100g,
+  };
+  const hoeherBesser = { gesundheit: true, kalorien: false, preis: false, eiweiss: true };
+  const norm = {};
+  for (const k in wert) {
+    const w = liste.map(wert[k]).filter(v => v != null);
+    const lo = Math.min(...w), hi = Math.max(...w);
+    norm[k] = g => {
+      const v = wert[k](g);
+      if (v == null || hi === lo) return 0.5;
+      const n = (v - lo) / (hi - lo);
+      return hoeherBesser[k] ? n : 1 - n;
+    };
+  }
+  const summe = GEWICHTE.reduce((s, [k]) => s + prio[k], 0);
+  return liste
+    .map(g => ({ g, score: summe ? GEWICHTE.reduce((s, [k]) => s + prio[k] * norm[k](g), 0) / summe : 0 }))
+    .sort((a, b) => b.score - a.score);
+}
+
+const euro = p => (p == null ? "–" : p.toFixed(2).replace(".", ",") + " €");
+const datumKurz = d => new Date(d + "T12:00").toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
+
+function ampel(g) {
+  const w = g.gesundheit;
+  const k = w == null ? "" : w >= 7 ? "g" : w >= 4 ? "y" : "r";
+  return `<span class="ampel ${k}"></span>`;
+}
+
+function chips(g) {
+  const c = [`<span class="chip">${esc(g.kategorie)}</span>`];
+  if (g.vegan) c.push('<span class="chip gruen">vegan</span>');
+  else if (g.vegetarisch) c.push('<span class="chip gruen">vegetarisch</span>');
+  c.push(g.kcal_portion != null
+    ? `<span class="chip">ca. ${g.kcal_portion} kcal <i>geschätzt</i></span>`
+    : `<span class="chip">${g.kcal_100g ?? "–"} kcal/100 g</span>`);
+  if (g.eiweiss_100g != null) c.push(`<span class="chip">${String(g.eiweiss_100g).replace(".", ",")} g Eiweiß/100 g</span>`);
+  c.push(g.gesundheit != null
+    ? `<span class="chip">${ampel(g)}Gesundheit ${g.gesundheit}/10 <i>geschätzt</i></span>`
+    : `<span class="chip">${ampel(g)}Gesundheit unbekannt</span>`);
+  return `<div class="chips">${c.join("")}</div>`;
+}
+
+function begruendung(g) {
+  return g.begruendung ? `<div class="begr">${esc(g.begruendung)} <i>geschätzt</i></div>` : "";
+}
+
+function passung(r) {
+  const p = Math.round(r.score * 100);
+  return `<div class="balken"><div style="width:${p}%"></div></div><div class="passung">Passung zu deinen Prioritäten: ${p} %</div>`;
+}
+
+function grosseKarte(r) {
+  const g = r.g;
+  return `<div class="karte gross"><div class="label">Tagesempfehlung</div>
+    <div class="zeile"><div class="name">${esc(g.name)}</div><div class="preis">${euro(g.preis_studierende)}</div></div>
+    ${chips(g)}${begruendung(g)}${passung(r)}
+    <button class="mail" id="mail">Per Mail teilen</button></div>`;
+}
+
+function kleineKarte(r) {
+  const g = r.g;
+  return `<div class="karte"><div class="zeile"><div class="name">${esc(g.name)}</div><div class="preis">${euro(g.preis_studierende)}</div></div>
+    ${chips(g)}${begruendung(g)}${passung(r)}</div>`;
+}
+
+function zeichne() {
+  if (!daten) return;
+  $("#tabs").innerHTML = daten.tage.map((t, i) =>
+    `<button class="tab${i === tagIndex ? " aktiv" : ""}" data-i="${i}">${esc(t.wochentag.slice(0, 2))}<small>${datumKurz(t.datum)}</small></button>`).join("");
+  const tag = daten.tage[tagIndex];
+  const liste = tag.gerichte.filter(g => (prio.vegan ? g.vegan : prio.vegetarisch ? g.vegetarisch : true));
+  const stand = new Date(daten.stand).toLocaleString("de-DE", { dateStyle: "short", timeStyle: "short" });
+  let html = `<div class="stand">Mensa ${esc(MENSEN[prio.mensa])} · ${esc(tag.wochentag)}, ${datumKurz(tag.datum)} · Stand ${esc(stand)}</div>`;
+  empfehlung = null;
+  if (!liste.length) {
+    html += `<div class="karte leer">${tag.gerichte.length ? "Kein Gericht passt zu deinen Filtern." : "Für diesen Tag gibt es keinen Speiseplan."}</div>`;
+  } else {
+    const rang = bewerten(liste);
+    empfehlung = { r: rang[0], tag };
+    html += grosseKarte(rang[0]);
+    if (rang.length > 1) html += "<h2>Weitere Gerichte</h2>" + rang.slice(1).map(kleineKarte).join("");
+  }
+  $("#links").innerHTML = html;
+}
+
+function mailen() {
+  if (!empfehlung) return;
+  const g = empfehlung.r.g, tag = empfehlung.tag;
+  const z = [
+    `Mein Mensa-Tipp für ${tag.wochentag}, ${datumKurz(tag.datum)} (Mensa ${MENSEN[prio.mensa]}):`, "",
+    `${g.name} (${g.kategorie})`,
+    `Preis für Studierende: ${euro(g.preis_studierende)}`,
+  ];
+  if (g.kcal_portion != null) z.push(`Kalorien: ca. ${g.kcal_portion} kcal pro Portion (geschätzt)`);
+  if (g.gesundheit != null) z.push(`Gesundheit: ${g.gesundheit}/10 (geschätzt)`);
+  if (g.vegan) z.push("Vegan"); else if (g.vegetarisch) z.push("Vegetarisch");
+  if (g.begruendung) z.push("", g.begruendung);
+  z.push("", "Empfohlen vom Mensa-Coach");
+  location.href = "mailto:?subject=" + encodeURIComponent(`Mensa-Tipp: ${g.name}`) + "&body=" + encodeURIComponent(z.join("\n"));
+}
+
+function zeichneMensen() {
+  $("#mensen").innerHTML = Object.entries(MENSEN).map(([k, n]) =>
+    `<button data-m="${k}" class="${k === prio.mensa ? "aktiv" : ""}">${n}</button>`).join("");
+}
+
+function zeichneSeitenleiste() {
+  $("#rechts").innerHTML = `<div class="karte"><h2>Meine Prioritäten</h2>
+    <h3>Filter</h3>
+    <label class="check"><input type="checkbox" id="f-vegan" ${prio.vegan ? "checked" : ""}> Nur vegan</label>
+    <label class="check"><input type="checkbox" id="f-vegetarisch" ${prio.vegetarisch ? "checked" : ""}> Nur vegetarisch</label>
+    <h3>Gewichtung (0 = egal, 3 = sehr wichtig)</h3>
+    ${GEWICHTE.map(([k, n]) => `<div class="regler"><div><span>${n}</span><b id="w-${k}">${prio[k]}</b></div>
+      <input type="range" min="0" max="3" step="1" value="${prio[k]}" data-k="${k}"></div>`).join("")}
+    <p class="hinweis">Gesundheit und Kalorien pro Portion sind KI-Schätzungen <i>(geschätzt)</i>. Deine Einstellungen werden in diesem Browser gemerkt.</p></div>`;
+  $("#f-vegan").onchange = e => { prio.vegan = e.target.checked; speichere(); zeichne(); };
+  $("#f-vegetarisch").onchange = e => { prio.vegetarisch = e.target.checked; speichere(); zeichne(); };
+  document.querySelectorAll("input[type=range]").forEach(el => {
+    el.oninput = () => {
+      prio[el.dataset.k] = Number(el.value);
+      $("#w-" + el.dataset.k).textContent = el.value;
+      speichere();
+      zeichne();
+    };
+  });
+}
+
+$("#mensen").onclick = e => {
+  const m = e.target.dataset.m;
+  if (!m || m === prio.mensa) return;
+  prio.mensa = m; speichere(); zeichneMensen(); ladeDaten();
+};
+$("#tabs").onclick = e => {
+  const b = e.target.closest(".tab");
+  if (!b) return;
+  tagIndex = Number(b.dataset.i);
+  tagWahl = daten.tage[tagIndex].datum;
+  zeichne();
+};
+$("#links").onclick = e => { if (e.target.id === "mail") mailen(); };
+
+zeichneMensen();
+zeichneSeitenleiste();
+ladeDaten();
+</script>
+</body>
+</html>
