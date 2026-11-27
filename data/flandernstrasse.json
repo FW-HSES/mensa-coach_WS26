@@ -1,5 +1,5 @@
 {
- "stand": "2026-11-26T08:33:08+01:00",
+ "stand": "2026-11-27T07:06:00+01:00",
  "tage": [
   {
    "datum": "2026-11-23",
@@ -13,9 +13,9 @@
      "vegetarisch": true,
      "kcal_100g": 97.0,
      "eiweiss_100g": 3.5,
-     "gesundheit": 7,
+     "gesundheit": 8,
      "kcal_portion": 291,
-     "begruendung": "Leicht, wenig Fett"
+     "begruendung": "light pasta, veggies, low calories"
     },
     {
      "kategorie": "Hauptgericht",
@@ -25,9 +25,9 @@
      "vegetarisch": false,
      "kcal_100g": 108.0,
      "eiweiss_100g": 4.2,
-     "gesundheit": 5,
+     "gesundheit": 6,
      "kcal_portion": 324,
-     "begruendung": "Fleisch + Sahne, mittig"
+     "begruendung": "meatballs moderate, sauce adds fat"
     }
    ]
   },
@@ -43,9 +43,9 @@
      "vegetarisch": true,
      "kcal_100g": 150.0,
      "eiweiss_100g": 3.0,
-     "gesundheit": 8,
+     "gesundheit": 7,
      "kcal_portion": 450,
-     "begruendung": "Vollkorn, pflanzlich, wenig Fett"
+     "begruendung": "vegan, veggies, moderate protein"
     },
     {
      "kategorie": "Hauptgericht",
@@ -55,9 +55,9 @@
      "vegetarisch": false,
      "kcal_100g": 127.0,
      "eiweiss_100g": 5.5,
-     "gesundheit": 4,
+     "gesundheit": 5,
      "kcal_portion": 381,
-     "begruendung": "Fettig, wenig Protein"
+     "begruendung": "balanced carbs, moderate protein, high fat"
     }
    ]
   },
@@ -75,7 +75,7 @@
      "eiweiss_100g": 2.8,
      "gesundheit": 7,
      "kcal_portion": 333,
-     "begruendung": "Gemüsebasis, wenig Protein"
+     "begruendung": "veg gnocchi, low protein, decent carbs"
     },
     {
      "kategorie": "Hauptgericht",
@@ -85,9 +85,9 @@
      "vegetarisch": true,
      "kcal_100g": 106.0,
      "eiweiss_100g": 4.4,
-     "gesundheit": 6,
+     "gesundheit": 7,
      "kcal_portion": 318,
-     "begruendung": "Gemüse, wenig Fett"
+     "begruendung": "vegetable-rich, moderate calories, low protein"
     },
     {
      "kategorie": "Hauptgericht",
@@ -99,7 +99,7 @@
      "eiweiss_100g": 8.5,
      "gesundheit": 5,
      "kcal_portion": 528,
-     "begruendung": "Fleisch, Käse, kalorienreich"
+     "begruendung": "pasta with meat sauce, calorie dense"
     }
    ]
   },
@@ -115,9 +115,9 @@
      "vegetarisch": true,
      "kcal_100g": 99.0,
      "eiweiss_100g": 2.1,
-     "gesundheit": 5,
+     "gesundheit": 6,
      "kcal_portion": 297,
-     "begruendung": "Kohlenhydratreich, wenig Protein"
+     "begruendung": "starchy noodles, sauerkraut, moderate"
     },
     {
      "kategorie": "Hauptgericht",
@@ -127,9 +127,9 @@
      "vegetarisch": true,
      "kcal_100g": 163.0,
      "eiweiss_100g": 5.8,
-     "gesundheit": 5,
+     "gesundheit": 6,
      "kcal_portion": 489,
-     "begruendung": "Kalorienreich, moderate Protein"
+     "begruendung": "nutty pasta, fruit adds fiber, still calorie dense"
     },
     {
      "kategorie": "Hauptgericht",
@@ -139,9 +139,9 @@
      "vegetarisch": false,
      "kcal_100g": 159.0,
      "eiweiss_100g": 10.1,
-     "gesundheit": 4,
+     "gesundheit": 5,
      "kcal_portion": 477,
-     "begruendung": "Fettreich, hoher Proteinanteil"
+     "begruendung": "rich meat, cream sauce, high fat"
     }
    ]
   },
@@ -157,9 +157,9 @@
      "vegetarisch": true,
      "kcal_100g": 94.0,
      "eiweiss_100g": 3.0,
-     "gesundheit": 7,
+     "gesundheit": 8,
      "kcal_portion": 282,
-     "begruendung": "Vollkorn, Gemüse, ausgewogen"
+     "begruendung": "rice with veggies, low fat"
     },
     {
      "kategorie": "Hauptgericht",
@@ -171,7 +171,7 @@
      "eiweiss_100g": 6.7,
      "gesundheit": 5,
      "kcal_portion": 561,
-     "begruendung": "Paniergut, Protein, viel Fett"
+     "begruendung": "breaded fish, mayo sauce, high fat"
     }
    ]
   }
